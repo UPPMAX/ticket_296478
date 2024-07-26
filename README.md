@@ -2,6 +2,30 @@
 
 Notes and code for ticket 296478
 
+## Suggested solution 1
+
+Add to the job script:
+
+```
+#SBATCH -C mem256GB
+```
+
+## Code
+
+User provided [code.R](code.R).
+
+It seems the [MatrixEQTL package](https://cran.r-project.org/web/packages/MatrixEQTL/index.html) is the workhorse.
+
+Paper can be found [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3348564/).
+
+The paper mentions memory in section 3.1
+
+> The number of tests in a modern eQTL study may exceed tens of billions and the full correlation matrix GST would require hundreds of gigabytes of RAM. 
+> To avoid excessive memory requirements we slice the data matrices in blocks of up to 10 000 variables and perform the analysis separately for each pair of blocks
+
+If blocks are 10k times 10k, this denotes 100M cells. The size of the cell in bytes is unknown. Assuming a cell is 64 bit, hence 8 byte, a block costs 800MB of RAM,
+which is way lower than the problematic 11.7 GB.
+
 ## Problem with job 48767710
 
 ```bash
@@ -38,3 +62,13 @@ eog rackham-naiss2023-5-474-lechu-48767710.png
 gives:
 
 ![jobstats of the job](rackham-naiss2023-5-474-lechu-48767710.png)
+
+Judging from the graph, the user seems to have 12.8 GB, hence '2 x 10' means 10x a duocore processor.
+
+As I do not have the user's batch script, it seems to me that the user could try to add to the batch script:
+
+- `-C mem256GB` 
+- `-C mem1TB`
+
+
+
